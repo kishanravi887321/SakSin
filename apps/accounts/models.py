@@ -6,6 +6,8 @@ class CustomUserManager(BaseUserManager):
     def create_user(self,username,email,password=None,role='user',bio=None):
         if not email:
             raise ValueError('email field must have to provide')
+        if '@' in username:
+            raise ValueError('username should not contain @')   
         user=self.model(
             username=username,
             email=self.normalize_email(email),
