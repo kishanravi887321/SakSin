@@ -32,7 +32,7 @@ class CustomUserManager(BaseUserManager):
 
 # Create your models here.
 class User(AbstractBaseUser):
-    username=models.CharField(unique=True,max_length=10)
+    username=models.CharField(unique=True,max_length=20)
     email=models.EmailField(unique=True)
     role=models.CharField(max_length=20)
     bio=models.TextField(max_length=200)
@@ -44,6 +44,7 @@ class User(AbstractBaseUser):
 
     USERNAME_FIELD='email'
     REQUIRED_FIELDS=['username']
+    objects=CustomUserManager()
     def __str__(self):
         return self.email
     
