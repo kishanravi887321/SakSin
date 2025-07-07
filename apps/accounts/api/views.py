@@ -3,7 +3,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views  import  Response
 from rest_framework.permissions import IsAuthenticated
 from ..serializers import  UserRegistrationSerializer,CustomTokenObtainPairSerializer,UpdatePasswordSerializer
-
+from ..serializers import ProfileImageUploadSerializer
 
 class  RegisterView(APIView):
     def post(self,request):
@@ -31,4 +31,14 @@ class UpdatePasswordView(GenericAPIView):
            serializer.save()
            return Response({"msg": "Password updated successfully"}, status=200)    
        return Response(serializer.errors, status=400)
-    
+   
+class ProfileImageUploadView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self,request):
+        serailizer= ProfileImageUploadSerializer(data=request.data)
+        if serailizer.is_valid():
+            serailizer.update(request.user,serailizer.validated_data)
+            return Response({"msg":"Profile image updated successfully","url": request.user.profile},status=200)
+
+        return Response(serailizer.errors,status=400)

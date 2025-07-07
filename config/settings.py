@@ -15,6 +15,9 @@ import  dj_database_url
 from dotenv  import load_dotenv 
 load_dotenv()
 import  os 
+from datetime import timedelta
+from decouple import config  # pip install python-decouple
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -116,8 +119,11 @@ REST_FRAMEWORK = {
 }
 SIMPLE_JWT = {
     'TOKEN_OBTAIN_SERIALIZER': 'apps.accounts.serializers.CustomTokenObtainPairSerializer',
+   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(config('ACCESS_TOKEN_LIFETIME', default=5))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(config('REFRESH_TOKEN_LIFETIME', default=1))),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 
@@ -144,3 +150,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL='accounts.User'
+
+
+
+# /// cloudniary 
+import cloudinary
+cloudinary.config(
+    cloud_name=os.getenv('CLOUD_NAME'),
+    api_key=os.getenv('API_KEY'),
+    api_secret=os.getenv('API_SECRET')
+)   
+DEFAULt_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

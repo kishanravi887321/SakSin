@@ -1,6 +1,10 @@
 
 from django.contrib.auth import  get_user_model
 from rest_framework import  serializers
+import os 
+import cloudinary
+import cloudinary.uploader  
+
 
 User=get_user_model()
 
@@ -74,3 +78,23 @@ class UpdatePasswordSerializer(serializers.Serializer):
         user = self.context['request'].user
         user.set_password(self.validated_data['new_password'])
         user.save()
+
+
+
+class ProfileImageUploadSerializer(serializers.Serializer):
+    profile_image = serializers.ImageField()
+
+    def update(self, instance, validated_data):
+        image = validated_data.get("profile_image")
+
+        if not image.name.lower().endswith(('.png', '.jpg', '.jpeg')):
+            raise serializers.ValidationError("Image must be a PNG, JPG, or JPEG file.")
+
+        # Upload to cloudinary
+        uploaded = cloudinary.uploader.upload(image)
+
+        # Save the image URL in the model
+        instance.profile = uploaded["secure_url"]
+        instance.save()
+
+        return instance
