@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
      'rest_framework_simplejwt',
+      'rest_framework_simplejwt.token_blacklist',
     'apps.accounts',
     
     'apps.interviews',
@@ -114,7 +115,9 @@ REST_FRAMEWORK = {
     ),
 }
 SIMPLE_JWT = {
-    'TOKEN_OBTAIN_SERIALIZER': 'apps.accounts.serializers.CustomTokenObtainPairSerializer'
+    'TOKEN_OBTAIN_SERIALIZER': 'apps.accounts.serializers.CustomTokenObtainPairSerializer',
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
 

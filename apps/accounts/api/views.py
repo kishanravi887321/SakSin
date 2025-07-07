@@ -1,6 +1,8 @@
 from rest_framework.views import  APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.views  import  Response
-from ..serializers import  UserRegistrationSerializer,CustomTokenObtainPairSerializer
+from rest_framework.permissions import IsAuthenticated
+from ..serializers import  UserRegistrationSerializer,CustomTokenObtainPairSerializer,UpdatePasswordSerializer
 
 
 class  RegisterView(APIView):
@@ -18,4 +20,15 @@ class CustomTokenObtainPairView(APIView):
           
             return Response(serializer.validated_data, status=200)
         return Response(serializer.errors, status=400)
+    
+class UpdatePasswordView(GenericAPIView):
+   permission_classes = [IsAuthenticated]
+   serializer_class = UpdatePasswordSerializer
+
+   def put(self,request):
+       serializer = self.get_serializer(data=request.data)
+       if serializer.is_valid():
+           serializer.save()
+           return Response({"msg": "Password updated successfully"}, status=200)    
+       return Response(serializer.errors, status=400)
     

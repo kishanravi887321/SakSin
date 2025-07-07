@@ -41,10 +41,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 print("username",login_value)
                 user = User.objects.get(username=login_value)
         except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid login credentials")
+            raise serializers.ValidationError("user doesnt exist")
 
         if not user.check_password(password):
-            raise serializers.ValidationError("Invalid login credentials")
+            raise serializers.ValidationError("password is incorrect")
 
         # Inject the actual username into attrs for token creation
         attrs['username'] = user.username
@@ -58,3 +58,19 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['email'] = user.email
 
         return data
+
+
+class UpdatePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True, write_only=True)
+    new_password = serializers.CharField(required=True, write_only=True)
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        if not user.check_password(attrs['old_password']):
+            raise serializers.ValidationError("Old password is incorrect")
+        return attrs
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
