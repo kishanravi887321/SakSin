@@ -195,3 +195,15 @@ SWAGGER_SETTINGS = {
 # /// otps system 
 BREVO_API_KEY_EMAIL = os.getenv('BREVO_API_KEY_EMAIL')
 FORWARDING_EMAIL = os.getenv('FORWARDING_EMAIL')
+
+# //  redis settings
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL"),  # stored in .env
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SSL": True,  # required for Upstash (uses TLS)
+        }
+    }
+}

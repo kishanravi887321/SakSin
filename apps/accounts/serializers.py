@@ -101,7 +101,8 @@ class ProfileImageUploadSerializer(serializers.Serializer):
     
 
 from ..auth.otpsender import (LoginOtpSender
-                              , forgetPasswordOtpSender,RegistrationOtpSender)
+                              , forgetPasswordOtpSender,RegistrationOtpSender
+                              ,UpdatePasswordOtpSender)
 
 class RegistrationOtpSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -122,19 +123,21 @@ class Otpserializer(serializers.Serializer):
 
     def validate_email(self, value):
         if not User.objects.filter(email=value).exists():
+            print('user not exist ')
             raise serializers.ValidationError("User with this email does not exist.")
         return value
-    
-    def send_register_otp(self):
-        email = self.validated_data['email']
-        otp_sender = LoginOtpSender(email)
-        otp = otp_sender.send()
-        return otp
+   
 
     def send_forget_password_otp(self):
         email = self.validated_data['email']
         otp_sender = forgetPasswordOtpSender(email)
         otp = otp_sender.send()
         return otp
+    def send_update_password_otp(self):
+        email = self.validated_data['email']
+        otp_sender = UpdatePasswordOtpSender(email)
+        otp = otp_sender.send()
+        return otp
+    
 
     

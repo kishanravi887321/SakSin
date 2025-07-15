@@ -1,8 +1,8 @@
-
 import random
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 from django.conf import settings
+
 
 class BaseOtpEmailSender:
     def __init__(self, email):
@@ -18,12 +18,13 @@ class BaseOtpEmailSender:
     def generate_otp(self):
         return str(random.randint(100000, 999999))
 
-    def send_email(self, subject, text_content):
+    def send_email(self, subject, text_content, html_content=None):
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            sender={"name": "SakSin", "email": settings.FORWARDING_EMAIL},
+            sender={"name": "Sākṣin", "email": settings.FORWARDING_EMAIL},
             to=[{"email": self.email}],
             subject=subject,
             text_content=text_content,
+            html_content=html_content  # ✅ HTML email body (optional)
         )
 
         try:

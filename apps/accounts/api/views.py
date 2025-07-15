@@ -1,11 +1,19 @@
 from rest_framework import generics, status
+from rest_framework.views import  APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from ..serializers import (
+from ..serializers import(
     UserRegistrationSerializer,
     CustomTokenObtainPairSerializer,
     UpdatePasswordSerializer,
-    ProfileImageUploadSerializer,Otpserializer,RegistrationOtpSerializer)
+    ProfileImageUploadSerializer,Otpserializer,RegistrationOtpSerializer,
+
+    
+    
+    
+    
+    
+    )
 from ..profile_doc import profile_image_upload_doc
 from rest_framework.parsers import MultiPartParser, FormParser
 from drf_yasg.utils import swagger_auto_schema
@@ -58,7 +66,7 @@ class ProfileImageUploadView(generics.UpdateAPIView):
     queryset = User.objects.all()  # Required for UpdateAPIView
 
     def get_object(self):
-        # Return the currently authenticated user
+        # Return the currently authenticated user   
         return self.request.user
 
     def update(self, request, *args, **kwargs):
@@ -73,7 +81,7 @@ class ProfileImageUploadView(generics.UpdateAPIView):
             status=status.HTTP_200_OK
         )
 
-class AuthForRegistration(generics.CreateAPIView):
+class AuthForRegistration(APIView):
  
     permission_classes = [AllowAny]
     @swagger_auto_schema(request_body=RegistrationOtpSerializer)
@@ -84,4 +92,26 @@ class AuthForRegistration(generics.CreateAPIView):
             return Response({"msg": "OTP sent successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class AuthforUpdatePassword(APIView):
+    permission_classes=[IsAuthenticated]
     
+    @swagger_auto_schema(request_body=Otpserializer)
+    def post(self,request):
+        serializer= Otpserializer(data=request.data)
+        if serializer.is_valid():
+            otp = serializer.send_update_password_otp()
+            return Response({"msg": "OTP sent successfully"}, status=status.HTTP_200_OK)   
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AuthforForgetPassword(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(request_body=Otpserializer)
+    def post(self, request):
+        serializer = Otpserializer(data=request.data)
+        if serializer.is_valid():
+            serializer.send_forget_password_otp()
+            return Response({"msg": "OTP sent successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+    
+
