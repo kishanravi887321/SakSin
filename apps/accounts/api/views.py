@@ -1,44 +1,87 @@
-from rest_framework.views import  APIView
-from rest_framework.generics import GenericAPIView
-from rest_framework.views  import  Response
-from rest_framework.permissions import IsAuthenticated
-from ..serializers import  UserRegistrationSerializer,CustomTokenObtainPairSerializer,UpdatePasswordSerializer
-from ..serializers import ProfileImageUploadSerializer
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from ..serializers import (
+    UserRegistrationSerializer,
+    CustomTokenObtainPairSerializer,
+    UpdatePasswordSerializer,
+    ProfileImageUploadSerializer,Otpserializer,RegistrationOtpSerializer)
+from ..profile_doc import profile_image_upload_doc
+from rest_framework.parsers import MultiPartParser, FormParser
+from drf_yasg.utils import swagger_auto_schema
+from ..models import User  # Adjust this import to match your project structure
 
-class  RegisterView(APIView):
-    def post(self,request):
-        serializer=UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return  Response({"msg":"creatd successfully"},status=201)
-        return  Response(serializer.errors,status=400)
-    
-class CustomTokenObtainPairView(APIView):
-    def post(self, request):
-        serializer = CustomTokenObtainPairSerializer(data=request.data)
-        if serializer.is_valid():
-          
-            return Response(serializer.validated_data, status=200)
-        return Response(serializer.errors, status=400)
-    
-class UpdatePasswordView(GenericAPIView):
-   permission_classes = [IsAuthenticated]
-   serializer_class = UpdatePasswordSerializer
+# 1. Registration View: CreateAPIView auto-documents the request body
+class RegisterView(generics.CreateAPIView):
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [AllowAny]
+    queryset = User.objects.all()
 
-   def put(self,request):
-       serializer = self.get_serializer(data=request.data)
-       if serializer.is_valid():
-           serializer.save()
-           return Response({"msg": "Password updated successfully"}, status=200)    
-       return Response(serializer.errors, status=400)
-   
-class ProfileImageUploadView(GenericAPIView):
+# 2. Custom Token Obtain Pair View: Using GenericAPIView with a serializer
+class CustomTokenObtainPairView(generics.GenericAPIView):
+    serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [AllowAny]
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        # Will automatically raise a 400 error if not valid
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+# 3. Update Password View: Using UpdateAPIView with the current user as the object
+class UpdatePasswordView(generics.UpdateAPIView):
+    serializer_class = UpdatePasswordSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]  # Allow file uploads if needed
+    queryset = User.objects.all()  # Required for UpdateAPIView
 
-    def put(self,request):
-        serailizer= ProfileImageUploadSerializer(data=request.data)
-        if serailizer.is_valid():
-            serailizer.update(request.user,serailizer.validated_data)
-            return Response({"msg":"Profile image updated successfully","url": request.user.profile},status=200)
+    def get_object(self):
+        # Return the currently authenticated user
+        return self.request.user
+    @swagger_auto_schema(
+        operation_description="Upload profile image",
+        request_body=ProfileImageUploadSerializer  # ✅ important!
+    )
+    def update(self, request, *args, **kwargs):
+        # Use partial update if necessary
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"msg": "Password updated successfully"}, status=status.HTTP_200_OK)
 
-        return Response(serailizer.errors,status=400)
+# 4. Profile Image Upload View: Using UpdateAPIView to update the current user's profile image
+class ProfileImageUploadView(generics.UpdateAPIView):
+    serializer_class = ProfileImageUploadSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()  # Required for UpdateAPIView
+
+    def get_object(self):
+        # Return the currently authenticated user
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # Pass instance and request data to the serializer; using partial update in case not all fields are provided
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        # Assuming the user model's "profile" attribute gets updated in the serializer's update() method
+        return Response(
+            {"msg": "Profile image updated successfully", "url": instance.profile},
+            status=status.HTTP_200_OK
+        )
+
+class AuthForRegistration(generics.CreateAPIView):
+ 
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(request_body=RegistrationOtpSerializer)
+    def post(self, request):
+        serializer = RegistrationOtpSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.send_register_otp()
+            return Response({"msg": "OTP sent successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    

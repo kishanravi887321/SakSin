@@ -48,6 +48,7 @@ INSTALLED_APPS = [
      'rest_framework_simplejwt',
       'rest_framework_simplejwt.token_blacklist',
     'apps.accounts',
+    'drf_yasg',
     
     'apps.interviews',
     'apps.subscriptions',
@@ -117,14 +118,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
-SIMPLE_JWT = {
-    'TOKEN_OBTAIN_SERIALIZER': 'apps.accounts.serializers.CustomTokenObtainPairSerializer',
-   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(config('ACCESS_TOKEN_LIFETIME', default=5))),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(config('REFRESH_TOKEN_LIFETIME', default=1))),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-}
+
 
 
 # Internationalization
@@ -152,7 +146,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL='accounts.User'
 
 
-
+# /// //////  all the environment variables are stored in .env file
 # /// cloudniary 
 import cloudinary
 cloudinary.config(
@@ -161,3 +155,43 @@ cloudinary.config(
     api_secret=os.getenv('API_SECRET')
 )   
 DEFAULt_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+# ///  jwt token settings
+
+SIMPLE_JWT = {
+    'TOKEN_OBTAIN_SERIALIZER': 'apps.accounts.serializers.CustomTokenObtainPairSerializer',
+   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(config('ACCESS_TOKEN_LIFETIME', default=5))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(config('REFRESH_TOKEN_LIFETIME', default=1))),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+
+# ///  ths oen for the razorpay 
+RAZORPAY_API_KEY = os.getenv('RAZORPAY_API_ID')
+RAZORPAY_API_SECRET = os.getenv('RAZORPAY_API_SECRET')  
+RAZOR_PAY_RS=int(os.getenv('PAYMENT_AMOUNT_RS', default=100))  # Default to 100 if not set
+
+
+
+
+# *********//
+# swagger ui
+# settings.py or directly in urls.py if you want
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': "JWT Authorization header using the Bearer scheme. Example: 'Bearer <token>'",
+        }
+    },
+}
+
+# /// otps system 
+BREVO_API_KEY_EMAIL = os.getenv('BREVO_API_KEY_EMAIL')
+FORWARDING_EMAIL = os.getenv('FORWARDING_EMAIL')
