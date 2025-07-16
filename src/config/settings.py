@@ -32,13 +32,8 @@ SECRET_KEY = os.getenv('SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-# CORS_ALLOWED_ORIGINS = [
-#     "http://127.0.0.1:5500",  
-#     "http://localhost:5500",
-#     "http://localhost:3000"
-# ]
-# Allow all origins (⚠️ use only in development)
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'saksin.onrender.com']
+
 CORS_ALLOW_ALL_ORIGINS = True
 
 LOGGING = {
