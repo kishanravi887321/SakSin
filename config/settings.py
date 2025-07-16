@@ -32,7 +32,15 @@ SECRET_KEY = 'django-insecure-nacc1*4o7k$qf)9wp_t663&8(s=o7c5q)qeiybm0j=_ik*)0t&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# CORS_ALLOWED_ORIGINS = [
+#     "http://127.0.0.1:5500",  
+#     "http://localhost:5500",
+#     "http://localhost:3000"
+# ]
+# Allow all origins (⚠️ use only in development)
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 
 # Application definition
@@ -40,6 +48,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'corsheaders',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -56,6 +65,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -208,4 +218,5 @@ CACHES = {
     }
 }
 REDIS_URL= os.getenv("REDIS_URL")  # stored in .env
-    
+
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')

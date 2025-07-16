@@ -7,6 +7,9 @@ from ..serializers import(
     CustomTokenObtainPairSerializer,
     UpdatePasswordSerializer,
     ProfileImageUploadSerializer,Otpserializer,RegistrationOtpSerializer,
+    LoginGoogleAuthSerializer,
+    ForgetPasswordSerializer
+    
 
     
     
@@ -35,6 +38,39 @@ class CustomTokenObtainPairView(generics.GenericAPIView):
         # Will automatically raise a 400 error if not valid
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+class ForgetPasswordView(generics.GenericAPIView):
+    serializer_class = ForgetPasswordSerializer
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        request_body=ForgetPasswordSerializer,
+        operation_description="Reset password using OTP"
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({"msg": "Password reset successfully"}, status=status.HTTP_200_OK)      
+
+
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        request_body=LoginGoogleAuthSerializer,
+        operation_description="Login using Google ID Token"
+    )
+    def post(self, request):
+        serializer = LoginGoogleAuthSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
 
 # 3. Update Password View: Using UpdateAPIView with the current user as the object
 class UpdatePasswordView(generics.UpdateAPIView):

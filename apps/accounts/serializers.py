@@ -5,18 +5,24 @@ import os
 import cloudinary
 import cloudinary.uploader  
 from django.core.cache import cache
+from google.oauth2 import id_token as google_id_token
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from  google.auth.transport import requests
+from django.conf import settings
+
 
 
 User=get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True)
-    role=serializers.CharField(required=False)
+    # role=serializers.CharField(required=False)
     otp= serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model=User
-        fields=['username','password','email','role','bio','otp']
+        fields=['username','password','email','otp']
     def validate(self, data):
         email = data.get('email')
         input_otp = data.get('otp')
@@ -41,7 +47,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    otp= serializers.CharField(write_only=True, required=False, allow_blank=True)
+    # otp= serializers.CharField(write_only=True, required=False, allow_blank=True)
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -52,6 +58,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
       
 
         return token
+    
     def validate(self, attrs):
         login_value = attrs.get('email')  # using username key to accept either username or email
         password = attrs.get('password')
@@ -90,6 +97,46 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
+print(settings.GOOGLE_CLIENT_ID)
+class LoginGoogleAuthSerializer(serializers.Serializer):
+    id_token = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        id_token_value = attrs.get('id_token')
+
+        try:
+            # Verify the token with Google's servers
+            id_info = google_id_token.verify_oauth2_token(
+                id_token_value,
+                requests.Request(),
+                settings.GOOGLE_CLIENT_ID
+            )
+            print(settings.GOOGLE_CLIENT_ID)
+
+            email = id_info.get('email')
+
+            # Try to find existing user, or create with blank username
+            user, created = User.objects.get_or_create(
+                email=email,
+                defaults={'username': None}  # intentionally skipping username
+            )
+
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            print('verified google token')
+            return {
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                'username': user.username,
+                'email': user.email,
+                'is_new_user': created
+            }
+
+        except ValueError:
+            raise serializers.ValidationError("Invalid Google ID token.")
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
+
 class UpdatePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True, write_only=True)
     new_password = serializers.CharField(required=True, write_only=True)
@@ -105,6 +152,37 @@ class UpdatePasswordSerializer(serializers.Serializer):
         user.set_password(self.validated_data['new_password'])
         user.save()
 
+class ForgetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp= serializers.CharField(write_only=True, required=True, allow_blank=True)
+    new_password = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, data):
+        email = data.get("email")
+        otp = data.get("otp")
+
+        # Check if the user exists
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": "User with this email does not exist."})
+        print('ver')
+        if not cache.get(f"otp:forget:{email}") == otp:
+            raise serializers.ValidationError({"otp": "Invalid or expired OTP."})
+        cache.delete(f"otp:forget:{email}")  # Delete OTP after validation
+        print('otp verified')
+        return data
+    
+    
+    def save(self, **kwargs):
+        email = self.validated_data['email']
+        new_password = self.validated_data['new_password']
+        
+        user = User.objects.get(email=email)
+        user.set_password(new_password)
+        user.save()
+        
+        return user
+
+      
 
 
 class ProfileImageUploadSerializer(serializers.Serializer):

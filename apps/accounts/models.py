@@ -34,18 +34,17 @@ class CustomUserManager(BaseUserManager):
 
 # Create your models here.
 class User(AbstractBaseUser):
-    username=models.CharField(unique=True,max_length=20)
+    username=models.CharField(unique=True,max_length=20,blank=True,null=True)
     email=models.EmailField(unique=True)
-    role=models.CharField(max_length=20)
-    bio=models.TextField(max_length=200)
+    role=models.CharField(max_length=20,null=True,blank=True,default='student')
+    bio=models.TextField(max_length=200,null=True,blank=True)
 
-    profile=models.URLField()
-
+    profile=models.URLField(null=True,blank=True)
     is_active=models.BooleanField(default=True)
     is_admin=models.BooleanField(default=False)
 
     USERNAME_FIELD='email'
-    REQUIRED_FIELDS=['username']
+    REQUIRED_FIELDS=[]
     objects=CustomUserManager()
     def __str__(self):
         return self.email
