@@ -114,4 +114,15 @@ class AuthforForgetPassword(APIView):
             return Response({"msg": "OTP sent successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
     
+class AuthforLogin(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(request_body=Otpserializer)
+    def post(self, request):
+        serializer = Otpserializer(data=request.data)
+        if serializer.is_valid():
+            serializer.send_login_otp()
+            return Response({"msg": "OTP sent successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 

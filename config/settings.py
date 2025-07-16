@@ -207,3 +207,5 @@ CACHES = {
         }
     }
 }
+REDIS_URL= os.getenv("REDIS_URL")  # stored in .env
+    

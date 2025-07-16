@@ -1,6 +1,9 @@
 from .baseotp import BaseOtpEmailSender
 
 class LoginOtpSender(BaseOtpEmailSender):
+    def __init__(self,email):
+        super().__init__(email,purpose="login")
+
 
     def send(self):
         otp=self.generate_otp()
@@ -183,6 +186,9 @@ class LoginOtpSender(BaseOtpEmailSender):
     
 
 class forgetPasswordOtpSender(BaseOtpEmailSender):
+    def __init__(self,email):
+        super().__init__(email,purpose="forget")
+
 
     def send(self):
         otp = self.generate_otp()
@@ -406,6 +412,9 @@ class forgetPasswordOtpSender(BaseOtpEmailSender):
         return otp
 
 class RegistrationOtpSender(BaseOtpEmailSender):
+    def __init__(self,email):
+        super().__init__(email,purpose="register")
+
 
     def send(self):
         otp = self.generate_otp()
@@ -714,6 +723,8 @@ class RegistrationOtpSender(BaseOtpEmailSender):
         self.send_email(subject, text_content, html_content=html_content)
         return otp
 class UpdatePasswordOtpSender(BaseOtpEmailSender):
+    def __init__(self,email):
+        super().__init__(email,purpose="update")
 
 
     def send(self):
