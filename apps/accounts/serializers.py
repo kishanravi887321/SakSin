@@ -183,7 +183,13 @@ class ForgetPasswordSerializer(serializers.Serializer):
         return user
 
       
+class UsernameCheckSerializer(serializers.Serializer):
+    username = serializers.CharField()
 
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Username already exists.")
+        return value
 
 class ProfileImageUploadSerializer(serializers.Serializer):
     profile_image = serializers.ImageField()

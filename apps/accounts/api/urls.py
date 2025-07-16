@@ -5,7 +5,8 @@ from  .views  import  (RegisterView,CustomTokenObtainPairView,UpdatePasswordView
                           ,AuthforForgetPassword
                            ,GoogleLoginView,
                             AuthforLogin,
-                            ForgetPasswordView
+                            ForgetPasswordView,
+                            UsernameCheckView
                        
                        )
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -13,6 +14,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 urlpatterns=[
     path('register/',RegisterView.as_view(),name='reg-view'),
     path('login/',CustomTokenObtainPairView.as_view(),name='login-view'),
+    path('check-username/', UsernameCheckView.as_view(), name='username-check-view'),
     path('google-login/', GoogleLoginView.as_view(), name='google-login-view'),
     path('auth/login/', AuthforLogin.as_view(), name='auth-login-view'),
     path('auth/update-password/', AuthforUpdatePassword.as_view(), name='auth-update-password-view'),

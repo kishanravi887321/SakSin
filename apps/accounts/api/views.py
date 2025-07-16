@@ -8,7 +8,8 @@ from ..serializers import(
     UpdatePasswordSerializer,
     ProfileImageUploadSerializer,Otpserializer,RegistrationOtpSerializer,
     LoginGoogleAuthSerializer,
-    ForgetPasswordSerializer
+    ForgetPasswordSerializer,
+    UsernameCheckSerializer
     
 
     
@@ -52,7 +53,23 @@ class ForgetPasswordView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({"msg": "Password reset successfully"}, status=status.HTTP_200_OK)      
+class UsernameCheckView(generics.GenericAPIView):
+    serializer_class = UsernameCheckSerializer
+    permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Check if username is available",
+        responses={200: "Username is available", 400: "Username already exists"}
+    )
+    def post(self, request, *args, **kwargs):
+     serializer = self.get_serializer(data=request.data)
+    
+     if serializer.is_valid():
+        # Username is available (passed validation)
+        return Response({"available": True, "msg": "Username is available"}, status=status.HTTP_200_OK)
+     else:
+        # Username already exists (failed validation)
+        return Response({"available": False, "msg": "Username already exists"}, status=status.HTTP_200_OK)
 
 class GoogleLoginView(APIView):
     permission_classes = [AllowAny]
