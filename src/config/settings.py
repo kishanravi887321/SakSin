@@ -32,7 +32,7 @@ SECRET_KEY = os.getenv('SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'saksin.onrender.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'saksin.onrender.com','saksin.online']
 
 CORS_ALLOW_ALL_ORIGINS = True
 
