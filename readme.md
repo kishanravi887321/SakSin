@@ -46,7 +46,7 @@
 | Memory Store   | Redis                            |
 | Emotion Engine | DeepFace                         |
 | Database       | PostgreSQL                       |
-| Hosting        | Render, Railway, or Vercel       |
+| Hosting        | Render      |
 
 ---
 
