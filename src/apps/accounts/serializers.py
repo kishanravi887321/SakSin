@@ -125,8 +125,8 @@ class LoginGoogleAuthSerializer(serializers.Serializer):
             refresh = RefreshToken.for_user(user)
             print('verified google token')
             return {
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
+                'accessToken': str(refresh.access_token),
+                'refreshToken': str(refresh),
                 'username': user.username,
                 'email': user.email,
                 'is_new_user': created
