@@ -57,6 +57,7 @@ class BaseOtpEmailSender:
         cache.delete(self.key)
 
     def send_email(self, subject, text_content, html_content=None):
+        print('otp email sender')
         """
         Sends the email using Brevo (SMTP).
         """
@@ -67,8 +68,10 @@ class BaseOtpEmailSender:
             text_content=text_content,
             html_content=html_content
         )
+       
 
         try:
+            print(f"[Brevo] Sending email to {self.email} with subject: {subject}")
             self.api_instance.send_transac_email(send_smtp_email)
         except ApiException as e:
             print(f"[Brevo] Failed to send email: {e}")

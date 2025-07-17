@@ -7,7 +7,7 @@ import cloudinary.uploader
 from django.core.cache import cache
 from google.oauth2 import id_token as google_id_token
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from cloudinary.uploader import upload as cloudinary_upload, destroy as cloudinary_destroy
 from  google.auth.transport import requests
 from django.conf import settings
 
@@ -125,8 +125,8 @@ class LoginGoogleAuthSerializer(serializers.Serializer):
             refresh = RefreshToken.for_user(user)
             print('verified google token')
             return {
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
+                'accessToken': str(refresh.access_token),
+                'refreshToken': str(refresh),
                 'username': user.username,
                 'email': user.email,
                 'is_new_user': created
@@ -191,24 +191,79 @@ class UsernameCheckSerializer(serializers.Serializer):
             raise serializers.ValidationError("Username already exists.")
         return value
 
-class ProfileImageUploadSerializer(serializers.Serializer):
-    profile_image = serializers.ImageField()
+from rest_framework import serializers
+from cloudinary.uploader import upload as cloudinary_upload
+from .models import User  # Adjust path as needed
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    photo = serializers.ImageField(required=False, write_only=True)
+    
+    linkedin = serializers.URLField(required=False, allow_blank=True)
+    github = serializers.URLField(required=False, allow_blank=True)
+    twitter = serializers.URLField(required=False, allow_blank=True)
+    website = serializers.URLField(required=False, allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = [
+            'name', 'username', 'role', 'bio', 'photo',
+            'linkedin', 'github', 'twitter', 'website'
+        ]
+
+
 
     def update(self, instance, validated_data):
-        image = validated_data.get("profile_image")
+    # Handle new image upload
+        new_image = validated_data.pop('photo', None)
+        old_image_url = instance.profile  # Save old image URL for later deletion
+        uploaded = None
 
-        if not image.name.lower().endswith(('.png', '.jpg', '.jpeg')):
-            raise serializers.ValidationError("Image must be a PNG, JPG, or JPEG file.")
+        if new_image:
+            if not new_image.name.lower().endswith(('.png', '.jpg', '.jpeg')):
+                raise serializers.ValidationError("Image must be a PNG, JPG, or JPEG file.")
+            uploaded = cloudinary_upload(new_image)
+            instance.profile = uploaded.get("secure_url")
 
-        # Upload to cloudinary
-        uploaded = cloudinary.uploader.upload(image)
+        # Handle social links
+        social_fields = ['linkedin', 'github', 'twitter', 'website']
+        social_data = {field: validated_data.pop(field, '') for field in social_fields}
+        instance.social_links = {**(instance.social_links or {}), **social_data}
 
-        # Save the image URL in the model
-        instance.profile = uploaded["secure_url"]
+        # Update remaining fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        # Save the instance
         instance.save()
 
+        # ✅ After successful save, delete the old image
+        if uploaded and old_image_url:
+            from urllib.parse import urlparse
+            import os
+
+            parsed = urlparse(old_image_url)
+            public_id = os.path.splitext(parsed.path.split('/')[-1])[0]
+            print(f"Deleting old image with public_id: {old_image_url}")
+            print(f"Public ID: {uploaded.get('secure_url')}")
+            cloudinary_destroy(public_id)
+
         return instance
-    
+
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id', 'name', 'username', 'email', 'role',
+            'bio', 'profile', 'social_links', 'date_joined'
+        ]
+        read_only_fields = fields
+
+
+
+
 
 from ..auth.otpsender import (LoginOtpSender
                               , forgetPasswordOtpSender,RegistrationOtpSender

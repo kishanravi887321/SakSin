@@ -6,10 +6,10 @@ from ..serializers import(
     UserRegistrationSerializer,
     CustomTokenObtainPairSerializer,
     UpdatePasswordSerializer,
-    ProfileImageUploadSerializer,Otpserializer,RegistrationOtpSerializer,
+    Otpserializer,RegistrationOtpSerializer,
     LoginGoogleAuthSerializer,
     ForgetPasswordSerializer,
-    UsernameCheckSerializer
+    UsernameCheckSerializer,UserProfileSerializer,ProfileSerializer
     
 
     
@@ -85,9 +85,31 @@ class GoogleLoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserProfileview(APIView):
+    permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Get user profile",
+        responses={200: UserProfileSerializer}
+    )
+    def get(self, request):
+        user = request.user
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
+class UserProfileUpdateView(generics.UpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_object(self):
+        return self.request.user
+
+    def patch(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_object(), data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"msg": "Profile updated successfully"}, status=status.HTTP_200_OK)
 
 # 3. Update Password View: Using UpdateAPIView with the current user as the object
 class UpdatePasswordView(generics.UpdateAPIView):
@@ -99,10 +121,7 @@ class UpdatePasswordView(generics.UpdateAPIView):
     def get_object(self):
         # Return the currently authenticated user
         return self.request.user
-    @swagger_auto_schema(
-        operation_description="Upload profile image",
-        request_body=ProfileImageUploadSerializer  # ✅ important!
-    )
+   
     def update(self, request, *args, **kwargs):
         # Use partial update if necessary
         partial = kwargs.pop('partial', False)
@@ -113,26 +132,7 @@ class UpdatePasswordView(generics.UpdateAPIView):
         return Response({"msg": "Password updated successfully"}, status=status.HTTP_200_OK)
 
 # 4. Profile Image Upload View: Using UpdateAPIView to update the current user's profile image
-class ProfileImageUploadView(generics.UpdateAPIView):
-    serializer_class = ProfileImageUploadSerializer
-    permission_classes = [IsAuthenticated]
-    queryset = User.objects.all()  # Required for UpdateAPIView
 
-    def get_object(self):
-        # Return the currently authenticated user   
-        return self.request.user
-
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        # Pass instance and request data to the serializer; using partial update in case not all fields are provided
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        # Assuming the user model's "profile" attribute gets updated in the serializer's update() method
-        return Response(
-            {"msg": "Profile image updated successfully", "url": instance.profile},
-            status=status.HTTP_200_OK
-        )
 
 class AuthForRegistration(APIView):
  
