@@ -1,67 +1,30 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import Optional
+# # import redis
+# # import os
 
-app = FastAPI()
+# # # Use your Upstash Redis URL
+# # redis_url = "rediss://default:AZoYAAIjcDFjZDY3ZDU3MzVlOGMNDVlOTgyYTBhMTAwMDIxZTgwYXAxMA@internal-raptor-39448.upstash.io:6379"
 
-# Define user model
-class User(BaseModel):
-    name: str
-    age: int
-    email: Optional[str] = None
+# # # Connect to Upstash Redis
+# # r = redis.from_url(redis_url, decode_responses=True)
 
-# 1️⃣ POST - Create a user
-@app.post("/create-user/")
-def create_user(user: User):
-    return {"message": f"User {user.name} created successfully!"}
+# # # Find all conversation keys or all keys
+# # keys = r.keys("*")  # You can also use "*" to clear everything
 
-# 2️⃣ GET - Home route
-@app.get("/")
-def read_home():
-    return {"message": "Welcome to the FastAPI Playground!"}
+# # # Delete each key
+# # for key in keys:
+# #     print(f"Deleting: {key}")
+# #     r.delete(key)
 
-# 3️⃣ GET - Get all users (dummy)
-@app.get("/users/")
-def get_users():
-    return [{"name": "Ravi"}, {"name": "Neha"}]
+# # print("✅ All conversation data deleted.")
+# import requests
 
-# 4️⃣ GET - Get user by ID
-@app.get("/users/{user_id}")
-def get_user(user_id: int):
-    return {"user_id": user_id, "name": "Sample User"}
+# url = "https://bf979707349e.ngrok-free.app/api/generate"
+# headers = {"Content-Type": "application/json"}
+# data = {
+#     "model": "qwen2.5:1.5b",
+#     "prompt": "write a code for make a string palindrome",
+#     "stream": False
+# }
 
-# 5️⃣ PUT - Update user
-@app.put("/update-user/{user_id}")
-def update_user(user_id: int, user: User):
-    return {"message": f"User {user_id} updated!", "updated_data": user}
-
-# 6️⃣ DELETE - Delete user
-@app.delete("/delete-user/{user_id}")
-def delete_user(user_id: int):
-    return {"message": f"User {user_id} deleted."}
-
-# 7️⃣ POST - Login route
-@app.post("/login/")
-def login(username: str, password: str):
-    if username == "admin" and password == "123":
-        return {"message": "Login successful!"}
-    return {"message": "Invalid credentials"}
-
-# 8️⃣ GET - Get app status
-@app.get("/status/")
-def get_status():
-    return {"status": "running", "version": "1.0.0"}
-
-# 9️⃣ GET - Search user
-@app.get("/search/")
-def search_user(name: str):
-    return {"searched_for": name, "result": f"Fake result for {name}"}
-
-# 🔟 POST - Feedback
-class Feedback(BaseModel):
-    comment: str
-    rating: int
-
-@app.post("/feedback/")
-def submit_feedback(feedback: Feedback):
-    return {"message": "Thanks for your feedback!", "data": feedback}
+# response = requests.post(url, json=data, headers=headers)
+# print(response.json()["response"])
