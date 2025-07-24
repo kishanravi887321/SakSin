@@ -6,8 +6,8 @@ from  .views  import  (RegisterView,CustomTokenObtainPairView,UpdatePasswordView
                            ,GoogleLoginView,
                             AuthforLogin,
                             ForgetPasswordView,
-                            UsernameCheckView
-                       
+                            UsernameCheckView,ViewUser,
+                            UpdateProfileView
                        )
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -23,5 +23,9 @@ urlpatterns=[
     path('update-password/', UpdatePasswordView.as_view(), name='update-password-view'),
     path('forget-password/', ForgetPasswordView.as_view(), name='forget-password-view'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh-view'),
-    path('update-profile/', ProfileImageUploadView.as_view(), name='profile-image-upload-view')
+    path('update-profile/', ProfileImageUploadView.as_view(), name='profile-image-upload-view'),
+    path('profile/', ViewUser.as_view(), name='view-user'),
+    path('profile/update/', UpdateProfileView.as_view(), name='update-profile-view'),
+
+
     ]

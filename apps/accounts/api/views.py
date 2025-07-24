@@ -10,7 +10,8 @@ from ..serializers import(
     LoginGoogleAuthSerializer,
     ForgetPasswordSerializer,
     UsernameCheckSerializer
-    
+    ,ViewUserSerializer
+    ,ProfileUpdateSerializer
 
     
     
@@ -179,3 +180,55 @@ class AuthforLogin(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
+class ViewUser(generics.RetrieveAPIView):
+    serializer_class = ViewUserSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()  # Required for RetrieveAPIView
+
+    def get_object(self):
+        # Return the currently authenticated user
+        return self.request.user
+
+    @swagger_auto_schema(
+        operation_description="Retrieve user profile",
+        responses={200: ProfileImageUploadSerializer}
+    )
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UpdateProfileView(generics.UpdateAPIView):
+    serializer_class = ProfileUpdateSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+
+    def get_object(self):
+        return self.request.user
+
+    @swagger_auto_schema(
+        operation_description="Update user profile",
+        request_body=ProfileUpdateSerializer
+    )
+    def update(self, request, *args, **kwargs):
+        print(request.data, "the data is ")
+
+        data = request.data.copy()
+        # Make sure to get raw values, not lists (if coming from form-data)
+        social_links = {
+            "linkedin": data.pop("linkedin", None),
+            "github": data.pop("github", None),
+            "twitter": data.pop("twitter", None),
+            "website": data.pop("website", None),
+        }
+
+        # Remove None values
+        social_links = {k: v for k, v in social_links.items() if v is not None}
+        data["social_links"] = social_links
+
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"msg": "Profile updated successfully"}, status=status.HTTP_200_OK)
