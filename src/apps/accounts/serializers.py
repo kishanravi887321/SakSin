@@ -264,7 +264,37 @@ class Otpserializer(serializers.Serializer):
         otp = otp_sender.send()
         return otp
     
-
     
+class ViewUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['role', 'username', 'date_joined','bio', 'email', 'profile', 'social_links','name']  # Include any other fields you want to expose
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['bio', 'username', 'profile', 'social_links', 'name', 'role']
+    social_links = serializers.JSONField(default=dict, required=False)
+
+    def update(self, instance, validated_data):
+        instance.bio = validated_data.get("bio", instance.bio)
+        instance.username = validated_data.get("username", instance.username)
+        instance.profile = validated_data.get("profile", instance.profile)
+        instance.name = validated_data.get("name", instance.name)
+        instance.role = validated_data.get("role", instance.role)
+
+        # Safely update nested social_links dictionary
+        social_links_data = validated_data.get("social_links", {})
+        current_links = instance.social_links or {}
+
+        for key in ["github", "linkedin", "twitter", "website"]:
+            if social_links_data.get(key):
+                current_links[key] = social_links_data[key]
+
+        instance.social_links = current_links
+        instance.save()
+        return instance
 
 # print('T'=="T")
