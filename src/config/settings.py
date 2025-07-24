@@ -32,11 +32,17 @@ SECRET_KEY = os.getenv('SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-CORS_ALLOW_ALL_ORIGINS = False
+ALLOWED_HOSTS = ['localhost', ]
+
+# CORS_ALLOW_ALL_ORIGINS
+
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "https://saksin.online",
     "https://saksin-ui-nextjs.onrender.com",
     "https://www.saksin.online",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
 ]
 CORS_ALLOW_HEADERS = [
     "authorization",
