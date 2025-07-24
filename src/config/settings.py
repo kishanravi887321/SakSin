@@ -38,6 +38,15 @@ CORS_ALLOWED_ORIGINS = [
     "https://saksin-ui-nextjs.onrender.com",
     "https://www.saksin.online",
 ]
+CORS_ALLOW_HEADERS = [
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+    "accept",
+    "origin",
+    "user-agent",
+    "x-requested-with",
+]
 
 # Application definition
 
