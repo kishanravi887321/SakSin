@@ -36,6 +36,7 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "https://saksin.online",
     "https://saksin-ui-nextjs.onrender.com",
+    "https://www.saksin.online",
 ]
 
 # Application definition
