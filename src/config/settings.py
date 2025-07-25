@@ -43,7 +43,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 #     "http://127.0.0.1:3000"
 # ]
 
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
     "authorization",
