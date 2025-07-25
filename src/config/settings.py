@@ -35,15 +35,15 @@ DEBUG = False
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'saksin.online', 'www.saksin.online']
 
 # CORS SETTINGS
-CORS_ALLOWED_ORIGINS = [
-    "https://saksin.online",
-    "https://www.saksin.online",
-    "https://saksin-ui-nextjs.onrender.com",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "https://saksin.online",
+#     "https://www.saksin.online",
+#     "https://saksin-ui-nextjs.onrender.com",
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000"
+# ]
 
-# CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
     "authorization",
