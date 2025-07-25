@@ -144,12 +144,20 @@ class InterviewSessionAPIView(APIView):
     def post(self, request):
         """Start new interview session"""
         try:
+            data = request.data.copy()  # Ensures mutable dict in Django or FastAPI
+            position = data.get("position")
+            role = data.get("role")
             # Debug logging
             logger.info(f"📝 Received interview start request")
-            logger.info(f"📝 Request data: {request.data}")
+            
+            if position:
+                data["role"] = position
+                logger.info(f"🔄 Overwriting 'role' with 'position': {position}")
+            # request.data = data  # Update request data
+            logger.info(f"📝 Request data: {data}")
             logger.info(f"📝 User authenticated: {request.user.is_authenticated if hasattr(request, 'user') else 'No user'}")
             
-            serializer = InterviewConfigSerializer(data=request.data)
+            serializer = InterviewConfigSerializer(data=data)
             if not serializer.is_valid():
                 logger.error(f"❌ Serializer validation failed: {serializer.errors}")
                 return Response(

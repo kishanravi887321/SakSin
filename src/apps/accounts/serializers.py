@@ -297,4 +297,12 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+class FeedChatifySerializer(serializers.Serializer):
+    # email = serializers.EmailField(max_length=1000)
+    content = serializers.CharField()
+
+    
+
+
 # print('T'=="T")

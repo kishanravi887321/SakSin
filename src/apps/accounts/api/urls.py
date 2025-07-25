@@ -7,7 +7,8 @@ from  .views  import  (RegisterView,CustomTokenObtainPairView,UpdatePasswordView
                             AuthforLogin,
                             ForgetPasswordView,
                             UsernameCheckView,ViewUser,
-                            UpdateProfileView
+                            UpdateProfileView,
+                            FeedChatifyView
                        )
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -26,6 +27,7 @@ urlpatterns=[
     path('update-profile/', ProfileImageUploadView.as_view(), name='profile-image-upload-view'),
     path('profile/', ViewUser.as_view(), name='view-user'),
     path('profile/update/', UpdateProfileView.as_view(), name='update-profile-view'),
+    path('chat/feed/', FeedChatifyView.as_view(), name='feed-chatify-view'),
 
 
     ]

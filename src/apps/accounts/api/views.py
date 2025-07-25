@@ -12,6 +12,7 @@ from ..serializers import(
     UsernameCheckSerializer
     ,ViewUserSerializer
     ,ProfileUpdateSerializer
+    ,FeedChatifySerializer
 
     
     
@@ -232,3 +233,41 @@ class UpdateProfileView(generics.UpdateAPIView):
         serializer.save()
 
         return Response({"msg": "Profile updated successfully"}, status=status.HTTP_200_OK)
+
+
+import requests
+
+class FeedChatifyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Feed Chatify",
+        request_body=FeedChatifySerializer
+    )
+    def post(self, request):
+        serializer = FeedChatifySerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"msg": "Chatify feed update failed"}, status=status.HTTP_401_UNAUTHORIZED)
+        user = request.user
+        email = user.email
+        raw_text = serializer.validated_data.get("content")
+        print(raw_text, "the raw text is ")
+        if len(raw_text) > 10000:
+            print('exceed')
+            return Response({"msg": "Content exceeds maximum length of 6000 characters"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            response = requests.post(
+                "http://localhost:8005/chat/feed/",
+                json={"email": email, "raw_text": raw_text},timeout=30
+            )
+            if response.status_code == 200:
+                print(response.json(), "the response is ")
+                return Response({"msg": "Chatify feed updated successfully","data":
+                                 response.json()}, status=status.HTTP_200_OK)
+            else:
+                return Response({"msg": "Failed to update Chatify feed"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        except requests.exceptions.RequestException as e:
+            return Response({"msg": "internal server error", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
