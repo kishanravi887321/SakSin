@@ -33,15 +33,16 @@ SECRET_KEY = os.getenv('SECRET')
 DEBUG = False
 
 ALLOWED_HOSTS = ['localhost','saksin.vercel.app',    '127.0.0.1', 'saksin.online', 'www.saksin.online','sakin.onrender.com']
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 # CORS SETTINGS
-# CORS_ALLOWED_ORIGINS = [
-#     "https://saksin.online",
-#     "https://www.saksin.online",
-#     "https://saksin-ui-nextjs.onrender.com",
-#     "http://localhost:3000",
-#     "http://127.0.0.1:3000"
-# ]
+CORS_ALLOWED_ORIGINS = [
+    '*',
+    "https://saksin.online",
+    "https://www.saksin.online",
+    "https://saksin-ui-nextjs.onrender.com",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+]
 
 # CORS_ALLOW_CREDENTIALS = True
 
