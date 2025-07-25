@@ -32,8 +32,8 @@ SECRET_KEY = os.getenv('SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost','saksin.varcel.app',    '127.0.0.1', 'saksin.online', 'www.saksin.online','sakin.onrender.com']
-
+ALLOWED_HOSTS = ['localhost','saksin.vercel.app',    '127.0.0.1', 'saksin.online', 'www.saksin.online','sakin.onrender.com']
+CORS_ALLOW_ALL_ORIGINS = True
 # CORS SETTINGS
 # CORS_ALLOWED_ORIGINS = [
 #     "https://saksin.online",
