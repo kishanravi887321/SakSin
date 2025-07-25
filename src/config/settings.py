@@ -31,10 +31,14 @@ SECRET_KEY = os.getenv('SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
-ALLOWED_HOSTS = ['localhost','saksin.vercel.app',    '127.0.0.1', 'saksin.online', 'www.saksin.online','sakin.onrender.com']
-# CORS_ALLOW_ALL_ORIGINS = True
-# CORS SETTINGS
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'saksin.vercel.app',
+    'saksin.online',
+    'www.saksin.online',
+    'sakin.onrender.com'
+]
 CORS_ALLOWED_ORIGINS = [
     "https://saksin.online",
     "https://www.saksin.online",
@@ -66,9 +70,10 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
-    'corsheaders',
+    
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
