@@ -30,17 +30,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-ALLOWED_HOSTS = [
+DEBUG = True
+# ALLOWED_HOSTS = [
   
-    'www.saksin.online',
+#     'www.saksin.online',
+#     'localhost'
+
+# ]
+# CORS_ALLOWED_ORIGINS = [
+#     # "https://saksin.online",
+#     "https://www.saksin.online"
     
-]
-CORS_ALLOWED_ORIGINS = [
-    # "https://saksin.online",
-    "https://www.saksin.online"
-    
-]
+# ]
 
 # ALLOWED_HOSTS = [
 #     'localhost',
