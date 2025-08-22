@@ -21,15 +21,7 @@ SECRET_KEY = os.getenv("SECRET", "unsafe-secret")
 # Debug mode (should be False in production)
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-# Hosts allowed to serve the backend
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "sakin.onrender.com",
-    "saksin.online",
-    "www.saksin.online",
-    "saksin-ui-1.onrender.com",
-]
+ALLOWED_HOSTS = ["*"]
 
 # CORS
 INSTALLED_APPS = [
