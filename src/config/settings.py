@@ -75,7 +75,7 @@ print(">>> Loaded settings.py with CORS:", CORS_ALLOWED_ORIGINS)
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "https://saksin-ui-1.onrender.com",
-    "https://sakin.onrender.com",
+    "https://saksin.onrender.com",
     "http://localhost:3000"
 ]
 print('>>>>>  CSRF config >>>', CSRF_TRUSTED_ORIGINS)
