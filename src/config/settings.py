@@ -35,20 +35,12 @@ DEBUG =False
 
 ALLOWED_HOSTS = [
     "saksin-ui-nextjs.onrender.com",
-    "localhost",
-    "127.0.0.1",
-    "saksin.vercel.app",
-    "saksin.online",
-    "www.saksin.online",
-    "sakin.onrender.com",
+
     
 ]
 
 CORS_ALLOWED_ORIGINS = [
    "https://saksin-ui-nextjs.onrender.com",
-    "https://saksin.online",
-    "https://www.saksin.online",
-    "https://saksin.vercel.app",
     
 ]
 
