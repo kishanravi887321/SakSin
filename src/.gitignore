@@ -1,0 +1,38 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+
+.env
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore virtual environment
+venv/
+
+# Ignore Django database
+*.sqlite3
+
+# Ignore environment variables
+.env
+
+# Ignore VS Code settings (if you use it)
+.vscode/
+
+# Ignore logs
+*.log
+
+# Ignore compiled C files
+*.so
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Ignore test output
+*.tmp
+*.test
+
+# Ignore system files
+.DS_Store
+Thumbs.db
