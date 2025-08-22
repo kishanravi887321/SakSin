@@ -30,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 # ALLOWED_HOSTS = [
 #     'localhost',
 #     '127.0.0.1',
@@ -48,26 +48,26 @@ DEBUG = False
 #     "http://127.0.0.1:3000"
 # ]
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'saksin.vercel.app',
-    'saksin.online',
-    'www.saksin.online',
-    'sakin.onrender.com'
-]
-CORS_ALLOWED_ORIGINS = [
-       "https://www.saksin.online",
-       "https://saksin.online",
-    "http://127.0.0.1:5500",  
-    "http://localhost:5500",
-    "http://localhost:3000"
+# ALLOWED_HOSTS = [
+#     'localhost',
+#     '127.0.0.1',
+#     'saksin.vercel.app',
+#     'saksin.online',
+#     'www.saksin.online',
+#     'sakin.onrender.com'
+# ]
+# CORS_ALLOWED_ORIGINS = [
+#        "https://www.saksin.online",
+#        "https://saksin.online",
+#     "http://127.0.0.1:5500",  
+#     "http://localhost:5500",
+#     "http://localhost:3000"
  
-]
+# ]
 # Allow all origins (⚠️ use only in development)
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
     "authorization",
