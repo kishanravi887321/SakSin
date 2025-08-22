@@ -31,39 +31,29 @@ SECRET_KEY = os.getenv('SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG =False
-# ALLOWED_HOSTS = [
-  
-#     'www.saksin.online',
-#     'localhost'
 
-# ]
-# CORS_ALLOWED_ORIGINS = [
-#     # "https://saksin.online",
-#     "https://www.saksin.online"
-    
-# ]
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'saksin.vercel.app',
-    'saksin.online',
-    'www.saksin.online',
-    'sakin.onrender.com',
-    'https://saksin-ui-nextjs.onrender.com'
+    "saksin-ui-nextjs.onrender.com",
+    "localhost",
+    "127.0.0.1",
+    "saksin.vercel.app",
+    "saksin.online",
+    "www.saksin.online",
+    "sakin.onrender.com",
+    
 ]
+
 CORS_ALLOWED_ORIGINS = [
+   "https://saksin-ui-nextjs.onrender.com",
     "https://saksin.online",
     "https://www.saksin.online",
-    "https://saksin.vercel.app",  # ✅ Add your backend domain
-    "https://saksin-ui-nextjs.onrender.com",
-    'https://saksin-ui-nextjs.onrender.com'
+    "https://saksin.vercel.app",
+    
 ]
 
-# Allow all origins (⚠️ use only in development)
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True  # 👈 required for login/auth
 
-# CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
     "authorization",
