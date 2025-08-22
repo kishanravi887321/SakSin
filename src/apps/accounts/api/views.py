@@ -82,6 +82,7 @@ class GoogleLoginView(APIView):
     )
     def post(self, request):
         serializer = LoginGoogleAuthSerializer(data=request.data)
+        print("Request data: during google login", request.data,"request",request)
         if serializer.is_valid():
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -142,6 +143,7 @@ class AuthForRegistration(APIView):
     @swagger_auto_schema(request_body=RegistrationOtpSerializer)
     def post(self, request):
         serializer = RegistrationOtpSerializer(data=request.data)
+        print("Request data: during registration", request.data,"request",request)
         if serializer.is_valid():
             serializer.send_register_otp()
             return Response({"msg": "OTP sent successfully"}, status=status.HTTP_200_OK)
