@@ -28,7 +28,7 @@ ALLOWED_HOSTS = [
     "sakin.onrender.com",
     "saksin.online",
     "www.saksin.online",
-    "saksin-ui.onrender.com",
+    "saksin-ui-1.onrender.com",
 ]
 
 # CORS
@@ -64,7 +64,7 @@ MIDDLEWARE = [
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    "https://saksin-ui.onrender.com",
+    "https://saksin-ui-1.onrender.com",
     "http://localhost:3000",
     "https://saksin.online",
     "https://www.saksin.online",
@@ -74,7 +74,7 @@ CORS_ALLOWED_ORIGINS = [
 print(">>> Loaded settings.py with CORS:", CORS_ALLOWED_ORIGINS)
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
-    "https://saksin-ui.onrender.com",
+    "https://saksin-ui-1.onrender.com",
     "https://sakin.onrender.com",
     "http://localhost:3000"
 ]
