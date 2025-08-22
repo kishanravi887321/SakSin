@@ -69,6 +69,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://saksin-ui-nextjs.onrender.com",
     "https://saksin.vercel.app",
 ]
+print(">>> Loaded settings.py with CORS:", CORS_ALLOWED_ORIGINS)
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
     "authorization",
