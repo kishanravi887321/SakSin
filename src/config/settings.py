@@ -37,7 +37,8 @@ ALLOWED_HOSTS = [
     
 ]
 CORS_ALLOWED_ORIGINS = [
-    "https://saksin.online",
+    # "https://saksin.online",
+    "https://www.saksin.online"
     
 ]
 
