@@ -136,6 +136,11 @@ class ProfileImageUploadView(generics.UpdateAPIView):
             {"msg": "Profile image updated successfully", "url": instance.profile},
             status=status.HTTP_200_OK
         )
+class Doctor(APIView):
+    permission_classes = [AllowAny]
+    def get(self,req):
+        print("checked successfully")
+        return Response({"msg": "Doctor cool"}, status=status.HTTP_200_OK)
 
 class AuthForRegistration(APIView):
  

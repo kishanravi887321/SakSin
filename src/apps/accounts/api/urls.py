@@ -8,12 +8,13 @@ from  .views  import  (RegisterView,CustomTokenObtainPairView,UpdatePasswordView
                             ForgetPasswordView,
                             UsernameCheckView,ViewUser,
                             UpdateProfileView,
-                            FeedChatifyView
+                            FeedChatifyView,Doctor
                        )
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns=[
     path('register/',RegisterView.as_view(),name='reg-view'),
+    path('doctor/', Doctor.as_view(), name='doctor-view'),
     path('login/',CustomTokenObtainPairView.as_view(),name='login-view'),
     path('check-username/', UsernameCheckView.as_view(), name='username-check-view'),
     path('auth/google/', GoogleLoginView.as_view(), name='google-login-view'),
