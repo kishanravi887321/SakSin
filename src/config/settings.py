@@ -64,9 +64,11 @@ MIDDLEWARE = [
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
+    "https://saksin-ui-nextjs.onrender.com",
+    "http://localhost:3000",
     "https://saksin.online",
     "https://www.saksin.online",
-    "https://saksin-ui-nextjs.onrender.com",
+    
     "https://saksin.vercel.app",
 ]
 print(">>> Loaded settings.py with CORS:", CORS_ALLOWED_ORIGINS)
