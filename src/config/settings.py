@@ -56,13 +56,15 @@ ALLOWED_HOSTS = [
     'www.saksin.online',
     'sakin.onrender.com'
 ]
-# CORS_ALLOWED_ORIGINS = [
-#     "http://127.0.0.1:5500",  
-#     "http://localhost:5500",
-#     "http://localhost:3000"
-# ]
+CORS_ALLOWED_ORIGINS = [
+       "https://www.saksin.online",
+    "http://127.0.0.1:5500",  
+    "http://localhost:5500",
+    "http://localhost:3000"
+ 
+]
 # Allow all origins (⚠️ use only in development)
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
 # CORS_ALLOW_CREDENTIALS = True
 
