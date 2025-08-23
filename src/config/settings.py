@@ -4,6 +4,7 @@ Django settings for config project.
 
 from pathlib import Path
 import os
+import random
 import dj_database_url
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -195,6 +196,14 @@ CACHES = {
     }
 }
 REDIS_URL = os.getenv("REDIS_URL")
+
+# ///  make the hashmap of 1-54 key 
+api_keys={i:os.getenv(f"GOOGLE_API_KEY_{i}") for i in range(1,55)}
+index=random.randint(1,54)
+GEMINI_API_KEY = api_keys[index]
+
+print(f"GEMINI_API_KEY_{index} selected", GEMINI_API_KEY)
+
 
 # Google OAuth
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")

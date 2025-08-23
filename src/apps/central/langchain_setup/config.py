@@ -4,9 +4,11 @@ Centralized configuration management for all LangChain integrations
 """
 
 import os
+import random
 from typing import Dict, Any, Optional
 from django.conf import settings
 from dataclasses import dataclass
+from django.conf import settings
 
 
 @dataclass
@@ -14,8 +16,7 @@ class LangChainConfig:
     """Configuration class for LangChain integrations"""
     
     # Google Gemini Configuration
-    GOOGLE_API_KEY: str = os.getenv('GOOGLE_API_KEY', '')
-    print(GOOGLE_API_KEY,"this is the key   ")
+   
     GEMINI_MODEL: str = "gemini-1.5-flash"
     # GEMINI_MODEL: str = "llama3"
     GEMINI_TEMPERATURE: float = 0.7
@@ -44,11 +45,12 @@ class LangChainConfig:
     ENABLE_SENTIMENT_ANALYSIS: bool = True
     
     @classmethod
-    def validate_config(cls) -> bool:
-        """Validate that all required configurations are present"""
-        if not cls.GOOGLE_API_KEY:
-            raise ValueError("GOOGLE_API_KEY environment variable is required")
-        return True
+    def get_random_api_key(cls):
+        keys={i:os.getenv(f"GOOGLE_API_KEY_{i}") for i in range(1,54)}
+        index=random.randint(1,54)
+        print(f'🎲🎲 selectd GOOGLE_API_KEY_{index} ....🎲🎲', keys[index])
+        return keys[index]
+   
     
     @classmethod
     def get_gemini_config(cls) -> Dict[str, Any]:
@@ -59,7 +61,7 @@ class LangChainConfig:
             'max_tokens': cls.GEMINI_MAX_TOKENS,
             'top_p': cls.GEMINI_TOP_P,
             'top_k': cls.GEMINI_TOP_K,
-            'api_key': cls.GOOGLE_API_KEY
+            'api_key': cls.get_random_api_key(),
         }
     
     @classmethod
@@ -75,7 +77,7 @@ class LangChainConfig:
 
 # Environment validation
 try:
-    LangChainConfig.validate_config()
+    LangChainConfig.get_random_api_key()
 except ValueError as e:
     print(f"⚠️  Configuration Warning: {e}")
     print("💡 Please set the GOOGLE_API_KEY environment variable")
