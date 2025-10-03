@@ -8,13 +8,27 @@ from typing import Dict, Any, List, Optional, AsyncGenerator
 from abc import ABC, abstractmethod
 
 try:
-    from langchain_google_genai import ChatGoogleGenerativeAI
-    from langchain_community.chat_models import ChatOllama
+    from google import genai
+    GOOGLE_GENAI_AVAILABLE = True
     from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
     from langchain_core.prompts import ChatPromptTemplate
     from langchain_core.output_parsers import StrOutputParser
-except ImportError:
-    print("⚠️  LangChain packages not installed. Run: pip install langchain langchain-google-genai")
+except ImportError as e:
+    print(f"⚠️  Google GenAI package not installed: {e}")
+    print("💡 Run: pip install google-genai")
+    GOOGLE_GENAI_AVAILABLE = False
+    
+    # Fallback to old LangChain if available
+    try:
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+        from langchain_core.prompts import ChatPromptTemplate
+        from langchain_core.output_parsers import StrOutputParser
+        print("🔄 Falling back to langchain-google-genai")
+        GOOGLE_GENAI_AVAILABLE = False
+    except ImportError:
+        print("❌ Neither google-genai nor langchain-google-genai available")
+        raise ImportError("Please install: pip install google-genai")
 
 from .config import LangChainConfig
 from .utils import ErrorHandler, ResponseFormatter
@@ -42,25 +56,36 @@ class BaseLLMClient(ABC):
 
 
 class GeminiClient(BaseLLMClient):
-    """Professional Google Gemini client with error handling and formatting"""
+    """Professional Google Gemini client supporting both new SDK and fallback"""
     
     def __init__(self):
         config = LangChainConfig.get_gemini_config()
         super().__init__(config)
         
         try:
-            self.llm = ChatGoogleGenerativeAI(
-                model=config['model'],
-                temperature=config['temperature'],
-                max_tokens=config['max_tokens'],
-                top_p=config['top_p'],
-                top_k=config['top_k'],
-                google_api_key=config['api_key'],
-                verbose=LangChainConfig.VERBOSE
-            )
+            if GOOGLE_GENAI_AVAILABLE:
+                # Use new Google GenAI SDK
+                self.client = genai.Client(api_key=config['api_key'])
+                self.model = config['model']
+                self.use_new_sdk = True
+                logger.info("✅ Gemini client initialized with new Google GenAI SDK")
+            else:
+                # Fallback to old LangChain integration
+                self.llm = ChatGoogleGenerativeAI(
+                    model=config['model'],
+                    temperature=config['temperature'],
+                    max_tokens=config['max_tokens'],
+                    top_p=config['top_p'],
+                    top_k=config['top_k'],
+                    google_api_key=config['api_key'],
+                    verbose=LangChainConfig.VERBOSE
+                )
+                self.output_parser = StrOutputParser()
+                self.use_new_sdk = False
+                logger.info("✅ Gemini client initialized with LangChain fallback")
             
-            self.output_parser = StrOutputParser()
-            logger.info("✅ Gemini client initialized successfully")
+            self.temperature = config['temperature']
+            self.max_tokens = config['max_tokens']
             
         except Exception as e:
             logger.error(f"❌ Failed to initialize Gemini client: {e}")
@@ -68,7 +93,7 @@ class GeminiClient(BaseLLMClient):
     
     def generate_response(self, prompt: str, system_message: Optional[str] = None, **kwargs) -> str:
         """
-        Generate a response using Gemini
+        Generate a response using Gemini (supports both new SDK and fallback)
         
         Args:
             prompt: User prompt
@@ -79,23 +104,31 @@ class GeminiClient(BaseLLMClient):
             Generated response string
         """
         try:
-            messages = []
+            if self.use_new_sdk:
+                # Use new Google GenAI SDK
+                full_prompt = prompt
+                if system_message:
+                    full_prompt = f"System: {system_message}\n\nUser: {prompt}"
+                
+                response = self.client.models.generate_content(
+                    model=self.model,
+                    contents=full_prompt
+                )
+                
+                response_text = response.text
+            else:
+                # Use LangChain fallback
+                messages = []
+                if system_message:
+                    messages.append(SystemMessage(content=system_message))
+                messages.append(HumanMessage(content=prompt))
+                
+                chain = self.llm | self.output_parser
+                response_text = chain.invoke(messages)
             
-            if system_message:
-                messages.append(SystemMessage(content=system_message))
-            
-            messages.append(HumanMessage(content=prompt))
-            
-            # Create chain
-            chain = self.llm | self.output_parser
-            
-            # Generate response
-            response = chain.invoke(messages)
-
-            print(prompt)
-            
+            print(f"Prompt: {prompt}")
             logger.info(f"✅ Generated response for prompt: {prompt[:50]}...")
-            return self.formatter.format_response(response)
+            return self.formatter.format_response(response_text)
             
         except Exception as e:
             logger.error(f"❌ Error generating response: {e}")
@@ -103,7 +136,7 @@ class GeminiClient(BaseLLMClient):
     
     async def generate_response_async(self, prompt: str, system_message: Optional[str] = None, **kwargs) -> str:
         """
-        Generate a response using Gemini asynchronously
+        Generate a response using Gemini asynchronously (supports both SDKs)
         
         Args:
             prompt: User prompt
@@ -114,21 +147,30 @@ class GeminiClient(BaseLLMClient):
             Generated response string
         """
         try:
-            messages = []
-            
-            if system_message:
-                messages.append(SystemMessage(content=system_message))
-            
-            messages.append(HumanMessage(content=prompt))
-            
-            # Create chain
-            chain = self.llm | self.output_parser
-            
-            # Generate response asynchronously
-            response = await chain.ainvoke(messages)
+            if self.use_new_sdk:
+                # Use new Google GenAI SDK (sync for now)
+                full_prompt = prompt
+                if system_message:
+                    full_prompt = f"System: {system_message}\n\nUser: {prompt}"
+                
+                response = self.client.models.generate_content(
+                    model=self.model,
+                    contents=full_prompt
+                )
+                
+                response_text = response.text
+            else:
+                # Use LangChain fallback with async
+                messages = []
+                if system_message:
+                    messages.append(SystemMessage(content=system_message))
+                messages.append(HumanMessage(content=prompt))
+                
+                chain = self.llm | self.output_parser
+                response_text = await chain.ainvoke(messages)
             
             logger.info(f"✅ Generated async response for prompt: {prompt[:50]}...")
-            return self.formatter.format_response(response)
+            return self.formatter.format_response(response_text)
             
         except Exception as e:
             logger.error(f"❌ Error generating async response: {e}")
@@ -176,7 +218,7 @@ class GeminiClient(BaseLLMClient):
     
     def generate_chat_response(self, message: str, conversation_history: List[Dict] = None) -> str:
         """
-        Generate chat response with conversation context
+        Generate chat response with conversation context (supports both SDKs)
         
         Args:
             message: Current user message
@@ -186,8 +228,6 @@ class GeminiClient(BaseLLMClient):
             Chat response string
         """
         try:
-            messages = []
-            
             # Add system message for chat context
             system_message = """
             You are a helpful AI assistant for Sākṣin, a professional interview platform.
@@ -202,27 +242,51 @@ class GeminiClient(BaseLLMClient):
 🎯 Example Behavior:
 - For a frontend developer: Ask about React concepts, UI accessibility, or CSS performance.
 - For a data role: Focus on SQL, data modeling, Python for data analysis, or ML pipeline questions.
-- For a general role: Stick to HR questions, behavioral STAR-based answers, and confidence-building strategies..
+- For a general role: Stick to HR questions, behavioral STAR-based answers, and confidence-building strategies.
             """
-            messages.append(SystemMessage(content=system_message))
             
-            # Add conversation history
-            if conversation_history:
-                for msg in conversation_history[-5:]:  # Last 5 messages
-                    if msg['role'] == 'user':
-                        messages.append(HumanMessage(content=msg['content']))
-                    elif msg['role'] == 'assistant':
-                        messages.append(AIMessage(content=msg['content']))
-            
-            # Add current message
-            messages.append(HumanMessage(content=message))
-            
-            # Generate response
-            chain = self.llm | self.output_parser
-            response = chain.invoke(messages)
+            if self.use_new_sdk:
+                # Use new Google GenAI SDK
+                context_parts = [f"System: {system_message}"]
+                
+                # Add conversation history
+                if conversation_history:
+                    for msg in conversation_history[-5:]:  # Last 5 messages
+                        if msg['role'] == 'user':
+                            context_parts.append(f"User: {msg['content']}")
+                        elif msg['role'] == 'assistant':
+                            context_parts.append(f"Assistant: {msg['content']}")
+                
+                # Add current message
+                context_parts.append(f"User: {message}")
+                
+                full_context = "\n\n".join(context_parts)
+                response = self.client.models.generate_content(
+                    model=self.model,
+                    contents=full_context
+                )
+                
+                response_text = response.text
+            else:
+                # Use LangChain fallback
+                messages = [SystemMessage(content=system_message)]
+                
+                # Add conversation history
+                if conversation_history:
+                    for msg in conversation_history[-5:]:  # Last 5 messages
+                        if msg['role'] == 'user':
+                            messages.append(HumanMessage(content=msg['content']))
+                        elif msg['role'] == 'assistant':
+                            messages.append(AIMessage(content=msg['content']))
+                
+                # Add current message
+                messages.append(HumanMessage(content=message))
+                
+                chain = self.llm | self.output_parser
+                response_text = chain.invoke(messages)
             
             logger.info(f"✅ Generated chat response for: {message[:50]}...")
-            return self.formatter.format_chat_response(response)
+            return self.formatter.format_chat_response(response_text)
             
         except Exception as e:
             logger.error(f"❌ Error generating chat response: {e}")

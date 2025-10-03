@@ -45,9 +45,10 @@ ALLOWED_HOSTS = [
 CORS_ALLOWED_ORIGINS = [
     "https://saksin.online",
     "https://www.saksin.online",
+    'http://localhost:3000',
     "https://saksin.vercel.app",  # ✅ Add your backend domain
     "https://saksin-ui-nextjs.onrender.com",
-    'https://saksin-ui-nextjs.onrender.com'
+    'https://saksin-ui-nextjs.onrender.com',
     'https://www.saksin.online'
 ]
 

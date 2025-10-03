@@ -16,8 +16,7 @@ class LangChainConfig:
     """Configuration class for LangChain integrations"""
     
     # Google Gemini Configuration
-   
-    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_MODEL: str = "gemini-1.5-pro"  # Try pro model instead of flash
     # GEMINI_MODEL: str = "llama3"
     GEMINI_TEMPERATURE: float = 0.7
     GEMINI_MAX_TOKENS: int = 4096
