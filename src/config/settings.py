@@ -60,12 +60,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = [
-    "https://saksin-ui-1.onrender.com",
-    "https://saksin.onrender.com",
-    "http://localhost:3000"
-]
-print('>>>>>  CSRF config >>>', CSRF_TRUSTED_ORIGINS)
+
+
 CORS_ALLOW_HEADERS = [
     "authorization",
     "content-type",
