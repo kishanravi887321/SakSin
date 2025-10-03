@@ -56,15 +56,9 @@ MIDDLEWARE = [
 ]
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = [
-    "https://saksin-ui-1.onrender.com",
-    "http://localhost:3000",
-    "https://saksin.online",
-    "https://www.saksin.online",
-    "https://www.saksin.online",
-    "https://saksin.vercel.app",
-]
-print(">>> Loaded settings.py with CORS:", CORS_ALLOWED_ORIGINS)
+CORS_ALLOW_ALL_ORIGINS = True
+
+
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "https://saksin-ui-1.onrender.com",
