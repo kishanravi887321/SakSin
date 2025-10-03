@@ -39,7 +39,9 @@ class CustomTokenObtainPairView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         # Will automatically raise a 400 error if not valid
-        serializer.is_valid(raise_exception=True)
+        x=serializer.is_valid()
+        if not x:
+            return Response({"msg":"password incorrect"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 class ForgetPasswordView(generics.GenericAPIView):

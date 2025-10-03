@@ -48,6 +48,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://saksin.vercel.app",  # ✅ Add your backend domain
     "https://saksin-ui-nextjs.onrender.com",
     'https://saksin-ui-nextjs.onrender.com'
+    'https://www.saksin.online'
 ]
 
 

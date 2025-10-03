@@ -91,6 +91,8 @@ class GeminiClient(BaseLLMClient):
             
             # Generate response
             response = chain.invoke(messages)
+
+            print(prompt)
             
             logger.info(f"✅ Generated response for prompt: {prompt[:50]}...")
             return self.formatter.format_response(response)

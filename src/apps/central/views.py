@@ -194,7 +194,7 @@ class InterviewSessionAPIView(APIView):
 class InterviewAnswerAPIView(APIView):
     """Submit interview answers"""
     
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     @swagger_auto_schema(
         operation_description="Submit an answer to interview question",
