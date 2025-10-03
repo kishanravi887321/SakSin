@@ -61,7 +61,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://saksin.online",
     "https://www.saksin.online",
-    
+    "https://www.saksin.online",
     "https://saksin.vercel.app",
 ]
 print(">>> Loaded settings.py with CORS:", CORS_ALLOWED_ORIGINS)
