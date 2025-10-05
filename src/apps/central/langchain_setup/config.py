@@ -7,16 +7,20 @@ import os
 import random
 from typing import Dict, Any, Optional
 from django.conf import settings
-from dataclasses import dataclass
 from django.conf import settings
 
 
-@dataclass
 class LangChainConfig:
     """Configuration class for LangChain integrations"""
     
     # Google Gemini Configuration
-    GEMINI_MODEL: str = "gemini-1.5-pro"  # Try pro model instead of flash
+    GEMINI_MODEL: str = "gemini-2.5-flash"  # Latest model
+    GEMINI_FALLBACK_MODELS: list = [
+        "gemini-2.5-flash",
+        "gemini-1.5-flash", 
+        "gemini-1.5-pro",
+        "gemini-pro"
+    ]
     # GEMINI_MODEL: str = "llama3"
     GEMINI_TEMPERATURE: float = 0.7
     GEMINI_MAX_TOKENS: int = 4096

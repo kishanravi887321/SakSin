@@ -64,11 +64,16 @@ class GeminiClient(BaseLLMClient):
         
         try:
             if GOOGLE_GENAI_AVAILABLE:
-                # Use new Google GenAI SDK
-                self.client = genai.Client(api_key=config['api_key'])
+                # Configure the new Google GenAI SDK
+                # Set the API key as environment variable for automatic pickup
+                import os
+                os.environ['GEMINI_API_KEY'] = config['api_key']
+                
+                # Initialize the new client (no api_key parameter needed)
+                self.client = genai.Client()
                 self.model = config['model']
                 self.use_new_sdk = True
-                logger.info("✅ Gemini client initialized with new Google GenAI SDK")
+                logger.info(f"✅ Gemini client initialized with new Google GenAI SDK, using model: {self.model}")
             else:
                 # Fallback to old LangChain integration
                 self.llm = ChatGoogleGenerativeAI(
